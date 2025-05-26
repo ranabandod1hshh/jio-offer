@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>जन्मदिन की शुभकामनाएं!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 95vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            max-width: 500px;
+            width: 90%;
+        }
+        #mainImage {
+            max-width: 100%;
+            height: auto;
+            max-height: 300px; /* आप इसे एडजस्ट कर सकते हैं */
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        #greetingMessage {
+            font-size: 2em;
+            color: #ff69b4; /* Pink */
+            margin-bottom: 20px;
+            font-weight: bold;
+            animation: fadeInBounce 1.5s ease-out;
+        }
+        @keyframes fadeInBounce {
+            0% {
+                opacity: 0;
+                transform: scale(0.5) translateY(-20px);
+            }
+            60% {
+                opacity: 1;
+                transform: scale(1.1) translateY(10px);
+            }
+            100% {
+                transform: scale(1) translateY(0);
+            }
+        }
+        input[type="text"] {
+            padding: 10px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: calc(100% - 22px);
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #generatedLinkContainer {
+            margin-top: 20px;
+            word-wrap: break-word;
+        }
+        #generatedLinkContainer a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        #generatedLinkContainer a:hover {
+            text-decoration: underline;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="greetingMessage" class="hidden"></div>
+
+        <img id="mainImage" src="https://i.pinimg.com/originals/c8/31/84/c831846abb939140269699f91390fd0d.gif" alt="लक्ष्मी जी">
+        
+        <div>
+            <label for="nameInput">आपका नाम लिखें:</label><br>
+            <input type="text" id="nameInput" placeholder="यहाँ अपना नाम टाइप करें">
+        </div>
+        
+        <button onclick="generateLink()">शुभकामना लिंक बनाएं</button>
+        
+        <div id="generatedLinkContainer">
+            <p id="linkInstructions" class="hidden">यह लिंक कॉपी करके शेयर करें:</p>
+            <a id="generatedLink" href="#" target="_blank"></a>
+            <button id="copyButton" class="hidden" onclick="copyLink()">लिंक कॉपी करें</button>
+            <p id="copyFeedback" class="hidden" style="color: green; font-size: 0.9em; margin-top: 5px;">लिंक कॉपी हो गया!</p>
+        </div>
+    </div>
+
+    <script>
+        const greetingMessageDiv = document.getElementById('greetingMessage');
+        const nameInput = document.getElementById('nameInput');
+        const generatedLinkAnchor = document.getElementById('generatedLink');
+        const linkInstructions = document.getElementById('linkInstructions');
+        const generatedLinkContainer = document.getElementById('generatedLinkContainer');
+        const copyButton = document.getElementById('copyButton');
+        const copyFeedback = document.getElementById('copyFeedback');
+
+        // जब पेज लोड हो
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const senderName = urlParams.get('sender');
+
+            if (senderName) {
+                greetingMessageDiv.textContent = `Happy Birthday, ${decodeURIComponent(senderName)}!`;
+                greetingMessageDiv.classList.remove('hidden');
+                // एनीमेशन को री-ट्रिगर करने के लिए
+                greetingMessageDiv.style.animation = 'none';
+                greetingMessageDiv.offsetHeight; // reflow
+                greetingMessageDiv.style.animation = ''; 
+            }
+        };
+
+        function generateLink() {
+            const name = nameInput.value.trim();
+            if (name === "") {
+                alert("कृपया अपना नाम लिखें!");
+                return;
+            }
+
+            // वर्तमान URL का आधार प्राप्त करें (बिना किसी मौजूदा पैरामीटर के)
+            const baseUrl = window.location.href.split('?')[0];
+            const newUrl = `${baseUrl}?sender=${encodeURIComponent(name)}`;
+            
+            generatedLinkAnchor.href = newUrl;
+            generatedLinkAnchor.textContent = newUrl;
+            linkInstructions.classList.remove('hidden');
+            generatedLinkContainer.classList.remove('hidden'); // पूरे कंटेनर को दिखाएं
+            copyButton.classList.remove('hidden');
+            copyFeedback.classList.add('hidden'); // पिछला फीडबैक छिपाएं
+            
+            // आप चाहें तो लिंक को एक टेक्स्ट एरिया में भी दिखा सकते हैं ताकि कॉपी करना आसान हो
+            // या सीधे क्लिपबोर्ड पर कॉपी करने का बटन बना सकते हैं (जैसा कि नीचे किया गया है)
+        }
+
+        function copyLink() {
+            const linkToCopy = generatedLinkAnchor.href;
+            navigator.clipboard.writeText(linkToCopy).then(() => {
+                copyFeedback.classList.remove('hidden');
+                setTimeout(() => {
+                    copyFeedback.classList.add('hidden');
+                }, 2000); // 2 सेकंड बाद संदेश छिपा दें
+            }).catch(err => {
+                console.error('लिंक कॉपी करने में विफल:', err);
+                alert('लिंक कॉपी करने में विफल। कृपया इसे मैन्युअल रूप से कॉपी करें।');
+            });
+        }
+        
+        // लक्ष्मी जी GIF को आप अपनी मुकेश अंबानी वाली GIF से बदल सकते हैं
+        // बस `src` एट्रिब्यूट में अपनी GIF का पाथ या URL डालें।
+        // उदाहरण के लिए, अगर आपकी GIF का नाम "mukesh_ambani.gif" है और वह HTML फ़ाइल के साथ उसी फ़ोल्डर में है:
+        // document.getElementById('mainImage').src = "mukesh_ambani.gif";
+        // या अगर वह ऑनलाइन है:
+        // document.getElementById('mainImage').src = "आपकी_GIF_का_URL";
+        
+        // यदि आप डिफ़ॉल्ट रूप से मुकेश अंबानी GIF चाहते हैं, तो HTML में <img> टैग का src बदलें:
+        // <img id="mainImage" src="आपकी_मुकेश_अंबानी_GIF_का_URL_या_पाथ" alt="शुभकामनाएं">
+        // और फिर यदि लक्ष्मी जी की GIF दिखानी हो जब कोई पैरामीटर न हो, तो JavaScript में कंडीशन लगा सकते हैं।
+        // लेकिन आपके सवाल के अनुसार, लक्ष्मी जी की इमेज डिफॉल्ट है।
+    </script>
+</body>
+</html>    }],
